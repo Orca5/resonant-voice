@@ -1,0 +1,1519 @@
+<title>The Resonant Voice</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ink:#211d17;
+    --paper:#f1ebdd;
+    --panel:#e8e0cd;
+    --panel-2:#ded4bb;
+    --line:#c9bc9c;
+    --accent:#a8681f;
+    --accent-deep:#7d4d16;
+    --accent-ink:#3a2408;
+    --done:#4f6e57;
+    --done-ink:#eef2ea;
+    --warn:#a1442f;
+    --text:#2a2419;
+    --text-dim:#6b5f4b;
+    --shadow: 0 1px 0 rgba(33,29,23,0.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#efe7d6;
+      --paper:#17130e;
+      --panel:#211b13;
+      --panel-2:#2a2318;
+      --line:#453a28;
+      --accent:#d9973f;
+      --accent-deep:#f0b866;
+      --accent-ink:#fbe6c4;
+      --done:#7ea88c;
+      --done-ink:#0f1a13;
+      --warn:#e08a70;
+      --text:#ece3cf;
+      --text-dim:#a9987c;
+      --shadow: 0 1px 0 rgba(0,0,0,0.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#efe7d6;
+    --paper:#17130e;
+    --panel:#211b13;
+    --panel-2:#2a2318;
+    --line:#453a28;
+    --accent:#d9973f;
+    --accent-deep:#f0b866;
+    --accent-ink:#fbe6c4;
+    --done:#7ea88c;
+    --done-ink:#0f1a13;
+    --warn:#e08a70;
+    --text:#ece3cf;
+    --text-dim:#a9987c;
+    --shadow: 0 1px 0 rgba(0,0,0,0.4);
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--text);
+    font-family:"Newsreader", ui-serif, Georgia, serif;
+    font-size:16px;
+    line-height:1.6;
+  }
+  h1,h2,h3{ text-wrap:balance; margin:0; }
+  .mono{ font-family:"IBM Plex Mono", ui-monospace, Menlo, monospace; }
+  .ipa{ font-family:"IBM Plex Mono", ui-monospace, monospace; font-weight:500; }
+  ::selection{ background:var(--accent); color:var(--done-ink); }
+  a{ color:var(--accent-deep); }
+
+  /* ---------- Header ---------- */
+  header.hero{
+    max-width:960px;
+    margin:0 auto;
+    padding:3.2rem 1.5rem 1.8rem;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono";
+    font-size:0.72rem;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    display:flex; align-items:center; gap:0.6em;
+  }
+  .eyebrow .dot{ width:6px;height:6px;border-radius:50%;background:var(--accent); }
+  h1.title{
+    font-family:"Fraunces";
+    font-weight:600;
+    font-optical-sizing:auto;
+    font-size:clamp(2.1rem, 5vw, 3.1rem);
+    letter-spacing:-0.01em;
+    color:var(--ink);
+    margin-top:0.35rem;
+  }
+  p.subtitle{
+    max-width:62ch;
+    color:var(--text-dim);
+    font-size:1.08rem;
+    margin-top:0.9rem;
+  }
+  p.subtitle em{ color:var(--text); font-style:italic; }
+
+  .pillars{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+    margin-top:2rem;
+    border-radius:3px;
+    overflow:hidden;
+  }
+  .pillar{
+    background:var(--panel);
+    padding:0.9rem 0.8rem;
+    display:flex; flex-direction:column; gap:0.35rem;
+  }
+  .pillar .num{ font-family:"IBM Plex Mono"; font-size:0.7rem; color:var(--accent); letter-spacing:0.08em; }
+  .pillar .name{ font-family:"Fraunces"; font-style:italic; font-size:1.02rem; color:var(--ink); }
+  .pillar .desc{ font-size:0.78rem; color:var(--text-dim); font-family:"IBM Plex Mono"; line-height:1.4; }
+
+  /* ---------- Mode switch ---------- */
+  .mode-switch{ display:flex; gap:0.5rem; margin-top:1.6rem; }
+  .mode-btn{
+    font-family:"IBM Plex Mono"; font-size:0.76rem; letter-spacing:0.06em; text-transform:uppercase;
+    color:var(--text-dim); background:transparent; border:1px solid var(--line);
+    padding:0.6rem 1rem; border-radius:3px; cursor:pointer; display:flex; align-items:center; gap:0.5em;
+  }
+  .mode-btn .dot{ width:5px; height:5px; border-radius:50%; background:var(--line); }
+  .mode-btn.active{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+  .mode-btn.active .dot{ background:var(--accent); }
+  .mode-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  [hidden]{ display:none !important; }
+
+  /* ---------- Progress meter ---------- */
+  .meter-wrap{
+    max-width:960px;
+    margin:0 auto;
+    padding:0 1.5rem;
+  }
+  .meter-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:"IBM Plex Mono"; font-size:0.75rem; letter-spacing:0.08em;
+    color:var(--text-dim); text-transform:uppercase; margin-bottom:0.5rem;
+  }
+  .meter-head .count{ color:var(--ink); font-size:0.85rem; }
+  .meter{
+    display:grid;
+    grid-template-columns:repeat(30, 1fr);
+    gap:3px;
+    height:14px;
+  }
+  .meter i{
+    background:var(--panel-2);
+    border-radius:1px;
+    display:block;
+  }
+  .meter i.on{ background:var(--accent); }
+  .meter i.week-end{ margin-right:6px; }
+
+  /* ---------- Week tabs ---------- */
+  nav.weeks{
+    max-width:960px;
+    margin:2.2rem auto 0;
+    padding:0 1.5rem;
+    display:flex;
+    gap:0.5rem;
+    overflow-x:auto;
+    position:sticky;
+    top:0;
+    background:var(--paper);
+    z-index:5;
+    padding-top:0.8rem;
+    padding-bottom:0.8rem;
+    border-bottom:1px solid var(--line);
+  }
+  .week-btn{
+    font-family:"IBM Plex Mono";
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    color:var(--text-dim);
+    background:transparent;
+    border:1px solid var(--line);
+    padding:0.55rem 0.9rem;
+    border-radius:3px;
+    cursor:pointer;
+    white-space:nowrap;
+    display:flex;
+    align-items:center;
+    gap:0.5em;
+  }
+  .week-btn .tag{ color:var(--accent); }
+  .week-btn.active{
+    background:var(--ink);
+    color:var(--paper);
+    border-color:var(--ink);
+  }
+  .week-btn.active .tag{ color:var(--accent); }
+  .week-btn:focus-visible, button:focus-visible, .day-check:focus-visible{
+    outline:2px solid var(--accent); outline-offset:2px;
+  }
+
+  main{
+    max-width:960px;
+    margin:0 auto;
+    padding:1.6rem 1.5rem 5rem;
+  }
+  .week-panel{ display:none; }
+  .week-panel.active{ display:block; }
+  .week-intro{
+    padding:1.1rem 0 1.6rem;
+    border-bottom:1px solid var(--line);
+    margin-bottom:1.4rem;
+  }
+  .week-intro h2{
+    font-family:"Fraunces"; font-weight:600; font-size:1.5rem; color:var(--ink);
+  }
+  .week-intro p{ color:var(--text-dim); margin-top:0.4rem; max-width:62ch; }
+
+  /* ---------- Day card ---------- */
+  .day{
+    border:1px solid var(--line);
+    border-radius:4px;
+    margin-bottom:0.7rem;
+    background:var(--panel);
+    box-shadow:var(--shadow);
+  }
+  .day-head{
+    display:flex;
+    align-items:center;
+    gap:0.9rem;
+    padding:0.85rem 1rem;
+    cursor:pointer;
+    user-select:none;
+  }
+  .day-num{
+    font-family:"Fraunces"; font-style:italic; font-weight:500;
+    font-size:1.6rem; color:var(--accent);
+    width:2.6rem; text-align:right; flex-shrink:0;
+  }
+  .day-head .titles{ flex:1; min-width:0; }
+  .day-head .day-title{ font-family:"Newsreader"; font-weight:500; font-size:1.05rem; color:var(--ink); }
+  .day-head .day-focus{
+    font-family:"IBM Plex Mono"; font-size:0.7rem; letter-spacing:0.08em;
+    text-transform:uppercase; color:var(--text-dim); margin-top:0.15rem;
+  }
+  .day-time{
+    font-family:"IBM Plex Mono"; font-size:0.75rem; color:var(--text-dim);
+    flex-shrink:0;
+  }
+  .day-check{
+    width:1.15rem; height:1.15rem;
+    border:1.5px solid var(--line);
+    border-radius:3px;
+    flex-shrink:0;
+    cursor:pointer;
+    background:var(--paper);
+    position:relative;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  .day-check:checked{ background:var(--done); border-color:var(--done); }
+  .day-check:checked::after{
+    content:"";
+    position:absolute; left:3px; top:-1px;
+    width:5px; height:9px;
+    border:solid var(--done-ink);
+    border-width:0 2px 2px 0;
+    transform:rotate(40deg);
+  }
+  .chevron{
+    font-family:"IBM Plex Mono"; color:var(--text-dim); font-size:0.9rem;
+    transition:transform 0.15s ease; flex-shrink:0;
+  }
+  .day.open .chevron{ transform:rotate(90deg); }
+  .day.open{ border-color:var(--accent); }
+  .day.done .day-num{ color:var(--done); }
+
+  .day-body{
+    display:none;
+    padding:0 1rem 1.15rem 1rem;
+    border-top:1px solid var(--line);
+  }
+  .day.open .day-body{ display:block; }
+
+  .session{
+    display:grid;
+    grid-template-columns:6.8rem 1fr;
+    gap:0.15rem 1rem;
+    margin-top:1rem;
+  }
+  .session .label{
+    font-family:"IBM Plex Mono"; font-size:0.68rem; letter-spacing:0.07em;
+    text-transform:uppercase; color:var(--accent);
+    padding-top:0.15rem;
+  }
+  .session .val{ font-size:0.96rem; padding-bottom:0.85rem; }
+  .session .val .w{ color:var(--text-dim); font-family:"IBM Plex Mono"; font-size:0.75rem; margin-left:0.3em;}
+  .session .val ul{ margin:0.2rem 0 0; padding-left:1.1rem; }
+  .session .val li{ margin-bottom:0.15rem; }
+  .twister{ font-style:italic; color:var(--ink); }
+  .session .row-line{ grid-column:1/-1; border-top:1px dashed var(--line); margin:0.1rem 0 0.5rem; }
+
+  .speak-btn{
+    font: inherit; color: inherit; background: transparent; border: none; padding: 0; margin: 0;
+    cursor: pointer; text-decoration: underline dotted; text-decoration-color: var(--accent); text-underline-offset: 3px;
+  }
+  .speak-btn:hover, .speak-btn:focus-visible{ color: var(--accent-deep); }
+  .speak-btn .ic{ font-size:0.68em; margin-left:2px; opacity:0.85; }
+  .speak-btn.unsupported{ text-decoration:none; cursor:default; opacity:0.65; }
+
+  /* ---------- reference + footer ---------- */
+  section.reference{
+    max-width:960px; margin:3rem auto 0; padding:0 1.5rem;
+  }
+  .ref-card{
+    border:1px solid var(--line); border-radius:4px; background:var(--panel);
+    padding:1.3rem 1.4rem;
+  }
+  .ref-card h3{ font-family:"Fraunces"; font-weight:600; font-size:1.15rem; color:var(--ink); margin-bottom:0.9rem;}
+  .ipa-grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(190px,1fr));
+    gap:0.9rem 1.2rem; font-size:0.88rem;
+  }
+  .ipa-row{ display:flex; flex-direction:column; gap:0.15rem; }
+  .ipa-row .head{ display:flex; gap:0.4em; align-items:baseline; }
+  .ipa-row .sym{ font-family:"IBM Plex Mono"; font-weight:600; color:var(--accent-deep); min-width:1.6em; }
+  .ipa-row .cue{ font-size:0.76rem; color:var(--text-dim); line-height:1.4; }
+
+  /* ---------- Live Coach ---------- */
+  #coachView{ max-width:960px; margin:0 auto; padding:1.6rem 1.5rem 2rem; }
+  .coach-status{ display:flex; align-items:center; gap:0.6em; font-family:"IBM Plex Mono"; font-size:0.75rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); margin-bottom:0.6rem; }
+  .coach-status .dot{ width:6px; height:6px; border-radius:50%; background:var(--line); }
+  .coach-status .dot.live{ background:var(--warn); animation:coachPulse 1.4s infinite; }
+  @media (prefers-reduced-motion:reduce){ .coach-status .dot.live{ animation:none; } }
+  @keyframes coachPulse{ 0%,100%{opacity:1;} 50%{opacity:0.25;} }
+
+  .privacy{
+    border:1px solid var(--line); border-radius:4px; background:var(--panel);
+    padding:0.9rem 1.1rem; font-size:0.86rem; color:var(--text-dim); margin-bottom:1.4rem;
+  }
+  .privacy b{ color:var(--text); }
+  .privacy .fallback-note{ display:block; margin-top:0.6rem; }
+
+  .coach-panel{ border:1px solid var(--line); border-radius:4px; background:var(--panel); margin-bottom:1.4rem; padding:1.2rem 1.3rem; }
+  .coach-panel h3{ font-family:"IBM Plex Mono"; font-size:0.72rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent); margin:0 0 0.9rem; }
+  .coach-row{ display:flex; flex-wrap:wrap; gap:1rem; align-items:end; }
+  .coach-field{ display:flex; flex-direction:column; gap:0.4rem; }
+  .coach-field label{ font-family:"IBM Plex Mono"; font-size:0.7rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--text-dim); }
+  .coach-field select{
+    font-family:"IBM Plex Mono"; font-size:0.85rem; background:var(--paper); color:var(--text);
+    border:1px solid var(--line); border-radius:3px; padding:0.5rem 0.6rem; min-width:220px;
+  }
+  .coach-passage{
+    font-family:"Newsreader"; font-style:italic; font-size:1.1rem; color:var(--ink);
+    margin-top:0.8rem; padding-top:0.8rem; border-top:1px dashed var(--line); min-height:1.6em;
+  }
+  button.coach-btn{
+    font-family:"IBM Plex Mono"; font-size:0.85rem; letter-spacing:0.05em; text-transform:uppercase;
+    background:var(--ink); color:var(--paper); border:1px solid var(--ink); border-radius:3px;
+    padding:0.7rem 1.4rem; cursor:pointer;
+  }
+  button.coach-btn.stop{ background:var(--warn); border-color:var(--warn); color:#fff8f0; }
+  button.coach-btn:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+  .coach-timer{ font-family:"IBM Plex Mono"; font-size:1.4rem; color:var(--ink); }
+
+  .coach-dash{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--line); border:1px solid var(--line); border-radius:4px; overflow:hidden; margin-bottom:1.2rem; }
+  .coach-tile{ background:var(--panel); padding:1rem 1.1rem; display:flex; flex-direction:column; gap:0.3rem; min-height:6.5rem; justify-content:space-between; }
+  .coach-tile .k{ font-family:"IBM Plex Mono"; font-size:0.68rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); }
+  .coach-tile .v{ font-family:"Fraunces"; font-style:italic; font-weight:500; font-size:1.9rem; color:var(--ink); }
+  .coach-tile .v .unit{ font-family:"IBM Plex Mono"; font-style:normal; font-size:0.85rem; color:var(--text-dim); margin-left:0.3em; }
+  .coach-tile .sub{ font-family:"IBM Plex Mono"; font-size:0.72rem; color:var(--text-dim); }
+  .coach-meter{ height:8px; border-radius:2px; background:var(--panel-2); overflow:hidden; margin-top:0.2rem; }
+  .coach-meter i{ display:block; height:100%; background:var(--accent); width:0%; }
+
+  canvas#trace{ width:100%; height:90px; display:block; margin-bottom:1.4rem; border-radius:3px; background:var(--panel-2); }
+
+  .coach-summary{ display:none; }
+  .coach-summary.show{ display:block; }
+  .coach-summary .grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:0.9rem; margin-top:0.9rem; }
+  .coach-summary .item{ border-left:2px solid var(--accent); padding-left:0.7rem; }
+  .coach-summary .item .k{ font-family:"IBM Plex Mono"; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-dim); }
+  .coach-summary .item .v{ font-family:"Fraunces"; font-style:italic; font-size:1.5rem; color:var(--ink); }
+
+  .feedback-list{ list-style:none; margin:1.1rem 0 0; padding:0; display:flex; flex-direction:column; gap:0.55rem; }
+  .feedback-item{ border-left:3px solid var(--line); padding:0.55rem 0.85rem; background:var(--panel-2); border-radius:0 3px 3px 0; font-size:0.92rem; line-height:1.5; }
+  .feedback-item.tone-good{ border-left-color:var(--done); }
+  .feedback-item.tone-watch{ border-left-color:var(--accent); }
+  .feedback-item.tone-fix{ border-left-color:var(--warn); }
+  .feedback-item .tag{ font-family:"IBM Plex Mono"; font-size:0.66rem; letter-spacing:0.08em; text-transform:uppercase; margin-right:0.6em; }
+  .feedback-item.tone-good .tag{ color:var(--done); }
+  .feedback-item.tone-watch .tag{ color:var(--accent-deep); }
+  .feedback-item.tone-fix .tag{ color:var(--warn); }
+  .history-note{ margin-top:1rem; padding-top:0.9rem; border-top:1px dashed var(--line); font-family:"IBM Plex Mono"; font-size:0.8rem; color:var(--text-dim); line-height:1.6; }
+  .history-note b{ color:var(--text); font-family:"IBM Plex Mono"; }
+  button.coach-btn.ghost{ background:transparent; color:var(--text-dim); border-color:var(--line); }
+
+  .coach-limits{ font-size:0.85rem; color:var(--text-dim); }
+
+  footer{
+    max-width:960px; margin:2.5rem auto 0; padding:1.6rem 1.5rem 3rem;
+    border-top:1px solid var(--line);
+    color:var(--text-dim); font-size:0.92rem;
+  }
+  footer h4{ font-family:"IBM Plex Mono"; font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; color:var(--text); margin-bottom:0.5rem;}
+  footer .cols{ display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-top:1.4rem;}
+  footer p{ margin:0 0 0.9rem; }
+
+  @media (max-width:640px){
+    .pillars{ grid-template-columns:repeat(2,1fr); }
+    .session{ grid-template-columns:1fr; }
+    .session .label{ padding-top:0.6rem; }
+    footer .cols{ grid-template-columns:1fr; }
+    .day-num{ width:2rem; font-size:1.35rem; }
+    .day-time{ display:none; }
+    .coach-dash{ grid-template-columns:1fr 1fr; }
+  }
+</style>
+
+<header class="hero">
+  <div class="eyebrow"><span class="dot"></span>30-DAY VOICE &amp; SPEECH PROGRAM</div>
+  <h1 class="title">The Resonant Voice</h1>
+  <p class="subtitle">Fifteen to thirty minutes a day, four weeks, one arc: from a thin, hurried, hesitant voice to one that sits low in the chest, lands on its stresses, and isn't afraid of silence. <em>Every drill is built on the actual phonetics of English</em> — the sounds you're really making, not the ones you think you're making.</p>
+
+  <div class="pillars">
+    <div class="pillar"><div class="num">WEEK I</div><div class="name">Foundation</div><div class="desc">breath &amp; articulation</div></div>
+    <div class="pillar"><div class="num">WEEK II</div><div class="name">Resonance</div><div class="desc">chest &amp; open throat</div></div>
+    <div class="pillar"><div class="num">WEEK III</div><div class="name">Fluency</div><div class="desc">rhythm, no stutter</div></div>
+    <div class="pillar"><div class="num">WEEK IV</div><div class="name">Delivery</div><div class="desc">pitch, pace, poise</div></div>
+  </div>
+
+  <div class="mode-switch" id="modeSwitch">
+    <button class="mode-btn active" data-mode="program"><span class="dot"></span>30-Day Program</button>
+    <button class="mode-btn" data-mode="coach"><span class="dot"></span>Live Coach</button>
+  </div>
+</header>
+
+<div id="programView">
+  <div class="meter-wrap">
+    <div class="ref-card" style="margin-bottom:1.4rem;">
+      <p style="margin:0;color:var(--text-dim);font-size:0.9rem;"><strong style="color:var(--ink)">Running a drill, three steps:</strong> (1) say the example word normally, (2) isolate just the target sound inside it and hold that sound a few seconds, shaping your mouth using the cue given, (3) say the word again with that same shape. No rep count given? Default to three slow passes through the list, then one pass at natural speed. The IPA symbol at the end of each line (e.g. <span class="mono">/i/</span>) is just a label for cross-checking against the <a href="#ipaRef">reference panel</a> — you don't need to read it to do the drill.</p>
+      <p style="margin:0.7rem 0 0;color:var(--text-dim);font-size:0.9rem;">Any underlined word — like this: <button type="button" class="speak-btn" data-say="pronunciation">pronunciation<span class="ic">🔊</span></button> — plays your browser's built-in text-to-speech when clicked, so you can hear it before you say it yourself. It's a synthetic voice, not a professional recording, and it can't demonstrate pitch, stress, or timing (the things Days 6, 17 and 22 are actually training) — use it to check you've got the right sound, not as a model for delivery.</p>
+    </div>
+    <div class="meter-head"><span>Progress</span><span class="count" id="countLabel">0 / 30 days</span></div>
+    <div class="meter" id="meter"></div>
+  </div>
+
+  <nav class="weeks" id="weekNav"></nav>
+
+  <main id="weekPanels"></main>
+
+  <section class="reference" id="ipaRef">
+    <div class="ref-card">
+      <h3>IPA reference — symbol, example, how to shape it</h3>
+      <div class="ipa-grid" id="ipaGrid"></div>
+    </div>
+  </section>
+</div>
+
+<div id="coachView" hidden>
+  <div class="coach-status"><span class="dot" id="coachStatusDot"></span><span id="coachStatusText">idle — reads your mic while a session is running</span></div>
+
+  <div class="privacy">
+    <b>What's local vs. not:</b> pitch, volume, and pause detection run entirely in this page's own math on your raw microphone signal — that audio never leaves your machine. <b>Pace and filler-word counts</b> use your browser's built-in speech recognition (Chrome only) — Chrome sends that audio to Google's servers to produce the transcript, same as any Chrome dictation feature. If Chrome speech recognition isn't available, everything except those two tiles still works.
+    <span class="fallback-note">The mic is requested once per page load and stays warm between Start/Stop — you'll only see the browser's permission prompt the first time you click Start. Use “Release mic” below if you'd rather it let go between sessions. If you're opening this as a local <span class="mono">file://</span> page, Chrome sometimes can't remember the grant between separate page loads (it can persist permissions reliably only for real http/https origins) — a prompt on every fresh open of the file is that browser limitation, not this page misbehaving.</span>
+    <span class="fallback-note" id="frameFallbackNote" hidden>This page appears to be running inside an embedded viewer, which typically blocks microphone access for security reasons. If “Start session” fails, save this file and open it directly in Chrome (double-click it, or drag it into a Chrome tab) instead.</span>
+  </div>
+
+  <div class="coach-panel">
+    <h3>Session setup</h3>
+    <div class="coach-row">
+      <div class="coach-field">
+        <label for="passageSelect">Reading passage</label>
+        <select id="passageSelect"></select>
+      </div>
+      <div class="coach-field">
+        <label>&nbsp;</label>
+        <button class="coach-btn ghost" id="hearBtn">🔊 Hear it</button>
+      </div>
+      <div class="coach-field">
+        <label for="sensitivity">Pause sensitivity</label>
+        <input type="range" id="sensitivity" min="1" max="10" value="5">
+      </div>
+      <div class="coach-field">
+        <button class="coach-btn" id="toggleBtn">Start session</button>
+      </div>
+      <div class="coach-field">
+        <button class="coach-btn ghost" id="releaseBtn" hidden>Release mic</button>
+      </div>
+      <div class="coach-field">
+        <label>Elapsed</label>
+        <div class="coach-timer mono" id="coachTimer">00:00</div>
+      </div>
+    </div>
+    <div class="coach-passage" id="passageText"></div>
+  </div>
+
+  <div class="coach-dash">
+    <div class="coach-tile">
+      <div class="k">Pace</div>
+      <div class="v" id="wpmVal">—<span class="unit">wpm</span></div>
+      <div class="sub" id="wpmSub">target 120–140</div>
+    </div>
+    <div class="coach-tile">
+      <div class="k">Pitch</div>
+      <div class="v" id="pitchVal">—<span class="unit">Hz</span></div>
+      <div class="sub" id="pitchSub">range —</div>
+    </div>
+    <div class="coach-tile">
+      <div class="k">Volume</div>
+      <div class="v" id="volVal">—<span class="unit">rms</span></div>
+      <div class="coach-meter"><i id="volBar"></i></div>
+    </div>
+    <div class="coach-tile">
+      <div class="k">Pauses</div>
+      <div class="v" id="pauseVal">0</div>
+      <div class="sub" id="pauseSub">avg — s</div>
+    </div>
+    <div class="coach-tile">
+      <div class="k">Fillers</div>
+      <div class="v" id="fillerVal">0</div>
+      <div class="sub">um · uh · erm</div>
+    </div>
+    <div class="coach-tile">
+      <div class="k">Speaking time</div>
+      <div class="v" id="speakPctVal">—<span class="unit">%</span></div>
+      <div class="sub">of session so far</div>
+    </div>
+  </div>
+
+  <canvas id="trace" width="880" height="90"></canvas>
+
+  <div class="coach-panel coach-summary" id="summaryPanel">
+    <h3>Session summary</h3>
+    <div class="grid" id="summaryGrid"></div>
+    <div class="feedback-list" id="feedbackList"></div>
+    <div class="history-note" id="historyNote"></div>
+  </div>
+
+  <p class="coach-limits">This does not score pronunciation accuracy — it can't tell you whether a specific /θ/ or /ɹ/ landed correctly. It measures the mechanics from the 30-day program: pace, pitch range, pause use, and volume steadiness. Pitch detection is autocorrelation-based and can jump an octave on noisy input; trust the trend across a session more than any single instantaneous reading.</p>
+</div>
+
+<footer>
+  <p><strong style="color:var(--ink)">How to run a session.</strong> Same time, same quiet room, every day — consistency does more than duration. Record every session on your phone; you won't hear your own progress in the moment, only in the tape. Keep water nearby: resonance work is thirsty work.</p>
+  <div class="cols">
+    <div>
+      <h4>What this trains</h4>
+      <p>Diaphragmatic breath support, open-throat chest resonance, precise consonant and vowel articulation, stress-timed English rhythm, and the deliberate pacing and pausing that read as authority rather than hesitation.</p>
+    </div>
+    <div>
+      <h4>A note on stuttering</h4>
+      <p>This program uses fluency-shaping techniques (easy onset, light contact, paced breathing) that performers and public speakers use to smooth out nerves-driven dysfluency. If you have a diagnosed neurological stutter, run this alongside — not instead of — a licensed speech-language pathologist.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const SPEAK_SUPPORTED = "speechSynthesis" in window;
+  let cachedVoice = null;
+  function pickVoice(){
+    if (!SPEAK_SUPPORTED) return null;
+    if (cachedVoice) return cachedVoice;
+    const voices = window.speechSynthesis.getVoices();
+    cachedVoice = voices.find(function(v){ return /en-US/i.test(v.lang) && /Google US English|Samantha|Alex/i.test(v.name); })
+      || voices.find(function(v){ return /en-US/i.test(v.lang); })
+      || voices.find(function(v){ return /^en/i.test(v.lang); })
+      || voices[0] || null;
+    return cachedVoice;
+  }
+  if (SPEAK_SUPPORTED){
+    window.speechSynthesis.onvoiceschanged = function(){ cachedVoice = null; };
+  }
+  window.speakText = function(text, rate){
+    if (!SPEAK_SUPPORTED || !text) return;
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    const v = pickVoice();
+    if (v) u.voice = v;
+    u.lang = "en-US";
+    u.rate = rate || (text.length <= 4 ? 0.55 : 0.85);
+    window.speechSynthesis.speak(u);
+  };
+  window.linkifySpeakable = function(html){
+    return html.replace(/“([^”]+)”/g, function(_, word){
+      const safe = word.replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+      return '“<button type="button" class="speak-btn" data-say="' + safe + '">' + word + '<span class="ic">🔊</span></button>”';
+    });
+  };
+  document.addEventListener("click", function(e){
+    const btn = e.target.closest(".speak-btn");
+    if (!btn) return;
+    e.preventDefault();
+    window.speakText(btn.dataset.say);
+  });
+  if (!SPEAK_SUPPORTED){
+    window.addEventListener("DOMContentLoaded", function(){
+      document.querySelectorAll(".speak-btn").forEach(function(b){ b.classList.add("unsupported"); b.title = "Text-to-speech isn't available in this browser"; });
+    });
+  }
+})();
+</script>
+
+<script>
+(function(){
+  const WEEKS = [
+    {id:1, roman:"I", name:"Foundation", blurb:"Before tone or timbre, the plumbing: breath that supports a full sentence, and consonants and vowels that land clean. Everything later is built on this week."},
+    {id:2, roman:"II", name:"Resonance", blurb:"The chest-forward warmth people mean when they say 'Morgan Freeman voice' isn't a lower pitch you force — it's tension released from the throat until your true resonant range can ring."},
+    {id:3, roman:"III", name:"Fluency", blurb:"Stutters and stumbles thrive on hard starts and rushed function words. This week replaces both with easy onset, light articulatory contact, and English's real stress-timed rhythm."},
+    {id:4, roman:"IV", name:"Delivery", blurb:"Everything upright and combined, under the mild pressure of an actual audience — even if that audience is just your phone's camera."},
+  ];
+
+  const DAYS = [
+    // WEEK 1
+    {w:1,d:1,title:"Breath baseline",focus:"Breath support",time:"15 min",
+      warm:"Hand on belly, hand on chest. Inhale through the nose for 4 counts — belly hand rises, chest hand stays still. Hold 2. Exhale through the mouth for 6. Eight rounds.",
+      drill:["For each word below, in order: (1) say the word normally, (2) isolate just its vowel and hold it 3 seconds on a steady exhale, shaping your mouth as described, (3) say the word again. Three passes through the full list, then one pass at natural speed.",
+        "beat — say it, then hold the long “ee” (lips spread in a slight smile, tongue arched high and forward), then say “beat” again  /i/",
+        "bit — say it, then hold the short “ih” (same shape as “ee” but relaxed — jaw a little lower, tongue a touch further back), then say “bit” again  /ɪ/",
+        "bait — say it slowly and notice it's really two sounds gliding together (“eh” sliding up into “ee”); hold that glide, then say “bait” again at normal speed  /eɪ/",
+        "bet — say it, then hold the “eh” (jaw half-open, tongue mid-height near the front), then say “bet” again  /ɛ/",
+        "bat — say it, then hold the flat “a” (jaw drops low, tongue low and forward, mouth corners pulled back slightly), then say “bat” again  /æ/",
+        "bot — say it, then hold the open “ah” (jaw drops all the way, tongue low and pulled back, lips relaxed), then say “bot” again  /ɑ/",
+        "but — say it, then hold the short “uh” (jaw half-open, tongue relaxed in the middle of your mouth), then say “but” again  /ʌ/",
+        "bought — say it, then hold the “aw” (jaw half-open, tongue pulled back and low, lips rounded), then say “bought” again  /ɔ/",
+        "boat — say it slowly and notice the glide (rounded “oh” tightening into “oo”); hold that glide, then say “boat” again at normal speed  /oʊ/",
+        "book — say it, then hold the short “oo” (tongue high and back, lips loosely rounded), then say “book” again  /ʊ/",
+        "boot — say it, then hold the long “oo” (tongue high and back, lips tightly rounded and pushed forward), then say “boot” again  /u/",
+        "about — say it, then notice the first syllable barely gets said at all — that collapsed “uh” is the schwa; try holding it alone, completely relaxed, jaw loose  /ə/"],
+      fluency:"Read this three times — normal pace, then half speed, then half speed with a full belly breath before each phrase:",
+      twister:"“The old lighthouse stood alone against the grey Atlantic, its beam sweeping the water like a slow, patient hand.”",
+      app:"Record yourself reading the sentence above once, normally. Label it “Day 1 baseline” and don't listen back yet — it's your only fixed reference point for Day 30.",
+      reflect:"Where did you run out of air? That's the phrase length your breath currently supports."},
+    {w:1,d:2,title:"Plosive precision",focus:"Articulation — p b t d k g",time:"15 min",
+      warm:"Box breathing: inhale 4, hold 4, exhale 4, hold 4. Six rounds.",
+      drill:["Three placements, each a voiceless/voiced pair. Say each pair five times, holding the back of your hand near your mouth on the voiceless one — you should feel a puff of air; the voiced one shouldn't produce one:",
+        "p / b — lips pressed fully together, then released into “pin” / “bin”",
+        "t / d — tongue tip pressed against the ridge just behind your upper front teeth, then released into “tin” / “din”",
+        "k / g — back of the tongue pressed against the soft palate (the far back of the roof of your mouth), then released into “cap” / “gap”"],
+      fluency:"Say each pair five times, exaggerating the air-puff on the voiceless one.",
+      twister:"“Big black bug bit a big black bear.” — five times slow, three times fast.",
+      app:"Read a paragraph of anything (a news article works) and consciously release every final consonant — don't let word endings disappear.",
+      reflect:"Which final consonants do you swallow when you speak quickly?"},
+    {w:1,d:3,title:"TH: the tell-tale sound",focus:"Articulation — θ / ð",time:"15 min",
+      warm:"Four rounds of belly breathing from Day 1, extending the exhale one count longer each round.",
+      drill:["Voiceless /θ/ (“think”, “three”, “bath”) vs. voiced /ð/ (“this”, “that”, “breathe”). Tongue tip lightly between the teeth, gentle continuous airflow — not a stop.",
+        "“thin” / “tin” · “thing” / “sing” · “breathe” / “breeze” · “than” / “dan” · “think” / “sink”"],
+      fluency:"Hold each /θ/ and /ð/ for a full two seconds before finishing the word, so you feel the airflow rather than a tap.",
+      twister:"“This thick thread, that thin thread — this thick thread is thicker than that thin thread.”",
+      app:"Read a short passage and circle (mentally or on paper) every TH word before you start — most stumbles here come from not seeing them coming.",
+      reflect:"Did any TH words come out as “d”, “f”, or “v”? That's the substitution to target."},
+    {w:1,d:4,title:"The American R",focus:"Articulation — ɹ",time:"15 min",
+      warm:"Belly breathing, 4-in / 2-hold / 6-out, six rounds.",
+      drill:["American /ɹ/ is bunched, not trilled or tapped, and nothing touches the roof of your mouth. Try both shapes below and use whichever feels more natural — most speakers land on one:",
+        "bunched — pull the back of your tongue up and back, tip low behind your bottom front teeth",
+        "retroflex — curl the tongue tip up and back toward (not touching) the ridge behind your upper teeth",
+        "either way, round your lips slightly, like you're about to say “oo” — that's what gives American R its color",
+        "“red” · “run” · “error” · “world” · “teacher” · “library” · “February”"],
+      fluency:"Say “error” and “library” slowly enough to feel the tongue bunch, then bring them back to normal speed without losing the shape.",
+      twister:"“Red lorry, yellow lorry, red lorry, yellow lorry.” — five times, staying precise as you speed up.",
+      app:"Read a paragraph and isolate every R-heavy word beforehand; say each one alone once, then read the paragraph through.",
+      reflect:"Note any word where R comes out closer to a “w” or disappears entirely."},
+    {w:1,d:5,title:"Vowel length",focus:"Articulation — vowel pairs",time:"15 min",
+      warm:"Four rounds of box breathing, then hum a single comfortable note for 10 seconds, twice.",
+      drill:["Each pair uses the same mouth shape — only tension and length differ. Say the first word, holding its vowel firmly for a full beat; then say the second word with that same shape, but relaxed and clipped short:",
+        "sheep vs. ship — lips spread, tongue high & front for both; long & tense in “sheep” /iː/, short & loose in “ship” /ɪ/",
+        "fool vs. full — lips rounded, tongue high & back for both; long & tense in “fool” /uː/, short & loose in “full” /ʊ/",
+        "heart vs. hut — jaw dropped, tongue low for both; held long in “heart” /ɑː/, clipped short in “hut” /ʌ/",
+        "caught vs. cot — lips rounded, tongue back for both; held long in “caught” /ɔː/, clipped short in “cot” /ɒ/"],
+      fluency:"Say each pair back to back, holding the long vowel visibly longer — count “two full beats” for long, “one quick beat” for short.",
+      twister:"“Sheep should sleep in the deep, not slip in the ship.”",
+      app:"Read a passage of your choice, over-holding every long vowel slightly more than feels natural — you're recalibrating, not performing.",
+      reflect:"Which long vowels do you clip when speaking fast?"},
+    {w:1,d:6,title:"Word stress",focus:"Articulation — stress shift",time:"20 min",
+      warm:"Belly breathing, six rounds, then the Day 1 vowel set once through.",
+      drill:["A stressed syllable is louder, a touch higher in pitch, and held longer with a full, clear vowel. An unstressed syllable goes quiet and fast, its vowel often collapsing toward schwa /ə/ (Day 1). Say the noun, then the verb, exaggerating that contrast on the syllable in caps:",
+        "“REcord” (n) / “reCORD” (v)",
+        "“PROgress” (n) / “proGRESS” (v)",
+        "“PERmit” (n) / “perMIT” (v)",
+        "“CONtent” (n) / “conTENT” (adj)"],
+      fluency:"Build one sentence using both forms: “I need to reCORD a new REcord.” Say it until the shift feels automatic.",
+      twister:"—",
+      app:"Take any paragraph and mark the stressed syllable of every word with two or more syllables before reading it aloud.",
+      reflect:"Unmarked stress is the single biggest reason speech sounds flat — did marking it change how the sentence landed?"},
+    {w:1,d:7,title:"Week 1 review + recording",focus:"Consolidation",time:"20 min",
+      warm:"Full breath sequence: belly breathing, box breathing, one long exhale hum.",
+      drill:["Run the full vowel set (Day 1) and the plosive pairs (Day 2) back to back, unhurried."],
+      fluency:"Read the Day 1 passage once more at your natural pace.",
+      twister:"Run all four twisters from this week once each, slow then fast.",
+      app:"Record the Day 1 sentence again, labeled “Day 7.” Don't compare yet — just bank it.",
+      reflect:"Write one sentence: what felt different in your mouth this week, not how you sounded."},
+
+    // WEEK 2
+    {w:2,d:8,title:"Humming into the chest",focus:"Resonance — chest",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Hum “mmm” on a comfortable low-mid pitch. Relax the jaw completely and let a slight, silent yawn open the back of the throat — feel the buzz move from the nose toward the chest.",
+        "Repeat: “mmm-hmm” ten times, then open into “mmm-ah” ten times, letting the ah fall out of the hum without changing the resonance."],
+      fluency:"Say “Good morning” ten times, starting each on the chest-resonant hum before opening into the words.",
+      twister:"—",
+      app:"Read one sentence normally, then the same sentence starting from a hum, and notice the difference in where you feel the sound.",
+      reflect:"Where in your body did you feel vibration today — throat, chest, or both?"},
+    {w:2,d:9,title:"Yawn–sigh release",focus:"Resonance — open throat",time:"15 min",
+      warm:"Three full, genuine yawns (fake ones work too — they open the throat the same way).",
+      drill:["Yawn fully, then sigh out on “haaah,” letting the pitch fall wherever it naturally lands as the throat relaxes. Do not push your voice lower — you're releasing tension, not performing a register.",
+        "Five rounds, each one a little more released than the last."],
+      fluency:"Say “Well, here's the thing” five times, each time starting from a released yawn-sigh instead of a cold start.",
+      twister:"—",
+      app:"Read a short paragraph, prefacing the first line with a silent half-yawn to set the throat before you speak.",
+      reflect:"Caution: if your throat feels strained or your voice feels scratchy afterward, you pushed pitch down artificially — ease off and let the range come to you."},
+    {w:2,d:10,title:"Nasal vs. oral resonance",focus:"Resonance — soft palate",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Pinch your nose and say a sustained “ahh.” If the tone changes drastically when you release your nose, too much sound is escaping nasally. Practice keeping the soft palate raised: say “ah-ng-ah” slowly, feeling the palate lift and drop.",
+        "Contrast pair: “ban” (nasal, correct) vs. forcing “bahh” through the nose (wrong, exaggerate it once to feel the difference)."],
+      fluency:"Read one sentence with an exaggeratedly nasal tone, then the same sentence with the palate lifted and open. Notice the resonance shift into the chest.",
+      twister:"—",
+      app:"Read a paragraph focusing only on keeping vowels oral and open, saving nasal resonance for m, n, and ng.",
+      reflect:"Which vowels default to nasal for you? Often it's the ones right before or after m/n."},
+    {w:2,d:11,title:"Descending pitch slide",focus:"Resonance — natural range",time:"15 min",
+      warm:"Hum from Day 8, four rounds.",
+      drill:["Sustain “ahh” starting at a comfortable pitch and slide slowly down to the lowest note you can hold cleanly — no creak, no strain, no forcing. Stop the moment it feels effortful.",
+        "Five slides, trying to land on the same comfortable low note each time — that note is closer to your true resonant pitch than your habitual speaking pitch."],
+      fluency:"Say “Let me tell you something” landing the first word on that comfortable low note, then let the rest of the sentence rise and fall naturally from there.",
+      twister:"—",
+      app:"Read a paragraph, anchoring only the first word of each sentence to your low resonant note.",
+      reflect:"That anchor note — not your ceiling, your floor — is your new default starting pitch."},
+    {w:2,d:12,title:"Resonant consonants",focus:"Resonance — m n l ŋ",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["m, n, l, and ng are voiced continuants — air keeps moving while you voice them, so you can hold each indefinitely. Extend each for two full seconds before finishing the word:",
+        "m — lips pressed lightly together, sound hums out through the nose: “mmmmorning”",
+        "n — tongue tip on the ridge behind your upper front teeth, sound hums out through the nose: “nnnnow”",
+        "l — tongue tip on that same ridge, but air flows around the sides of the tongue and out through the mouth: “llllisten”",
+        "ŋ (as in sing) — back of the tongue against the soft palate, sound hums out through the nose: “siiiinging”"],
+      fluency:"Say “Morning, listen — now” stretching every m, n, and l well past what feels natural.",
+      twister:"“An ample sample amply fills the mill.”",
+      app:"Read a paragraph, giving every m, n, and l noticeably more time than you would normally allow.",
+      reflect:"Extended resonant consonants are one of the fastest ways to make a voice sound unhurried and grounded."},
+    {w:2,d:13,title:"Projection without shouting",focus:"Resonance — support",time:"20 min",
+      warm:"Belly breathing, then the pitch slide from Day 11, three rounds.",
+      drill:["Projection is breath support plus resonance, not volume. Read one line aiming your voice at a wall 10 feet away, powered by the belly (not the throat)."],
+      fluency:"Read the same line aimed at a wall 20 feet away, then 30 — the pitch and resonance should stay identical; only the breath support increases.",
+      twister:"—",
+      app:"Read a full paragraph as if to the back of a mid-sized room, without raising your pitch or straining your throat.",
+      reflect:"Did your throat tighten as you tried to project? If so, the extra volume came from the wrong place — breath, not throat, does the work."},
+    {w:2,d:14,title:"Week 2 review + recording",focus:"Consolidation",time:"20 min",
+      warm:"Full sequence: belly breathing, three yawn-sighs, hum into “mmm-ah.”",
+      drill:["Run the pitch slide (Day 11) and resonant consonants (Day 12) back to back."],
+      fluency:"Read the Day 1 sentence once more, anchoring the first word to your resonant floor note.",
+      twister:"—",
+      app:"Record it, labeled “Day 14.”",
+      reflect:"Write one line: has your starting pitch changed since Day 1?"},
+
+    // WEEK 3
+    {w:3,d:15,title:"Easy onset",focus:"Fluency — soft starts",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Instead of starting a word with a hard glottal stop, let a whisper of breath begin just before the voice does — the word arrives on air, not on impact.",
+        "Practice on vowel-initial and plosive-initial words: “apple” · “every” · “today” · “people” · “basic”"],
+      fluency:"Say each word from the list ten times, exaggerating the soft breath-first onset, then bring it back toward natural speed without losing the softness.",
+      twister:"—",
+      app:"Read a paragraph applying easy onset only to the first word of each sentence.",
+      reflect:"This is the single most-used technique in stutter therapy for a reason — did any hard blocks soften?"},
+    {w:3,d:16,title:"Light articulatory contact",focus:"Fluency — reduced tension",time:"15 min",
+      warm:"Easy onset words from Day 15, five rounds.",
+      drill:["Say p, b, t, d with the lightest possible touch of the articulators — lips and tongue barely meeting rather than pressing hard.",
+        "Light-contact words: “pop” · “daddy” · “potato” · “today” · “department”"],
+      fluency:"Say “Today I'd like to talk about” with deliberately light contact on every consonant, as if the words cost no effort at all.",
+      twister:"—",
+      app:"Read a paragraph, consciously loosening your lips and tongue on every plosive — most blocks come from over-gripping, not under-gripping.",
+      reflect:"Where in your mouth do you tense up first when nervous?"},
+    {w:3,d:17,title:"Stress-timed rhythm",focus:"Fluency — English rhythm",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["English is stress-timed: content words (nouns, verbs, adjectives) get the beat; function words (a, the, to, of, and) compress between beats.",
+        "Tap a steady beat and speak only on the taps: “The CAT sat ON the MAT” — CAT, ON, MAT get taps; the, sat, the compress."],
+      fluency:"Do this with five of your own sentences, tapping the beat on the table as you speak.",
+      twister:"—",
+      app:"Read a paragraph aloud, deliberately rushing function words and landing squarely on content words.",
+      reflect:"Flat, syllable-by-syllable speech is often just missing this compression — did the paragraph sound less mechanical?"},
+    {w:3,d:18,title:"Linking & connected speech",focus:"Fluency — smoothing",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Consonants link into the next word's vowel rather than stopping and restarting:",
+        "“turn it off” → “tur-ni-toff” · “not at all” → “no-ta-tall” · “pick it up” → “pi-ki-tup”"],
+      fluency:"Say each linked phrase five times until the words blur into one continuous stream.",
+      twister:"—",
+      app:"Read a paragraph hunting for consonant-vowel links between word boundaries and connecting every one you find.",
+      reflect:"Choppy, over-separated speech reads as hesitant even when it isn't — did linking make you sound more fluid?"},
+    {w:3,d:19,title:"The pause before the word",focus:"Fluency — strategic pausing",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Instead of filling hesitation with “um,” insert a full one-to-two second silent pause directly before your sentence's most important word.",
+        "Practice: “The answer is — [pause] — no.” · “What matters here is — [pause] — trust.”"],
+      fluency:"Write three of your own sentences, mark the key word, and pause before it deliberately — resist the urge to fill the silence.",
+      twister:"—",
+      app:"Read a paragraph, choosing one pause point per sentence and holding it silently for a full two seconds.",
+      reflect:"Silence feels much longer to the speaker than to the listener — did the pause feel unbearable while sounding, on playback, natural?"},
+    {w:3,d:20,title:"Deliberate pacing",focus:"Fluency — slowing down",time:"20 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Read a 100-word passage and time it. Divide 100 by your seconds and multiply by 60 for words-per-minute. Conversational English runs 150–160 WPM; aim for 120–140.",
+        "Re-read the same passage, checking the clock, until you land in that range without sounding artificially slow."],
+      fluency:"Read it a third time from memory of the pace, no clock — then check yourself.",
+      twister:"—",
+      app:"Read a new, unfamiliar paragraph cold, aiming for 120–140 WPM on the first attempt.",
+      reflect:"Note your natural WPM from Day 20 versus your practiced target — that gap is exactly what daily practice is closing."},
+    {w:3,d:21,title:"Week 3 review + recording",focus:"Consolidation",time:"20 min",
+      warm:"Full sequence: belly breathing, easy onset words, one stress-timed sentence.",
+      drill:["Run linking (Day 18) and pausing (Day 19) together on the same paragraph."],
+      fluency:"Read the Day 1 sentence at your new target pace, with one deliberate pause before its most important word.",
+      twister:"—",
+      app:"Record it, labeled “Day 21.”",
+      reflect:"Write one line: which fluency technique is becoming automatic, and which still needs conscious effort?"},
+
+    // WEEK 4
+    {w:4,d:22,title:"Pitch variation, not monotone",focus:"Delivery — pitch",time:"15 min",
+      warm:"Pitch slide from Day 11, three rounds.",
+      drill:["Gravitas is not flatness. Read the same sentence three ways: rising at the end (question), falling (statement), and falling further with weight (conclusion).",
+        "“This changes everything.” — as a question, a statement, a verdict."],
+      fluency:"Read a five-sentence paragraph choosing a deliberate pitch shape for each sentence before you start it.",
+      twister:"—",
+      app:"Record a 90-second passage, varying pitch shape sentence by sentence rather than staying flat.",
+      reflect:"Monotone and “deep and calm” are not the same thing — did the variation still feel grounded?"},
+    {w:4,d:23,title:"Storytelling cadence",focus:"Delivery — narrative voice",time:"20 min",
+      warm:"Belly breathing plus hum, three rounds each.",
+      drill:["Narration slows at turning points and speeds slightly through routine detail. Take any short personal story (2–3 sentences) and mark where the stakes rise."],
+      fluency:"Tell the story aloud twice: once at a single flat pace, once slowing deliberately at the turning point.",
+      twister:"—",
+      app:"Record the story with the deliberate slow-down at its turning point.",
+      reflect:"Where you slow down tells the listener what mattered — did the slowdown land where you intended?"},
+    {w:4,d:24,title:"Twisters at speed",focus:"Delivery — articulator agility",time:"15 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Run every twister from the program back to back, slow and precise, then again at speed:",
+        "“Big black bug…” · “Red lorry, yellow lorry…” · “This thick thread…” · “Sheep should sleep…” · “An ample sample…”"],
+      fluency:"Pick the one that trips you up most and repeat it ten times, slow to fast.",
+      twister:"“She sells seashells by the seashore, and the shells she sells are surely seashells.”",
+      app:"Read a paragraph immediately after the twisters — articulator agility built in the twisters should carry into normal speech.",
+      reflect:"Twisters aren't the goal — they're a warm-up that makes normal speech feel effortless by comparison."},
+    {w:4,d:25,title:"Mock two-minute speech",focus:"Delivery — full integration",time:"25 min",
+      warm:"Full sequence: belly breathing, hum, pitch slide, one twister.",
+      drill:["Prepare a two-minute talk on any topic you know well — no script, three bullet points only."],
+      fluency:"Rehearse it once silently, marking mentally where you'll pause and which words you'll land on.",
+      twister:"—",
+      app:"Deliver and record the full two minutes, applying breath, resonance, pacing, and pausing together.",
+      reflect:"Don't review yet — one clean, unselfconscious take matters more today than a perfect one."},
+    {w:4,d:26,title:"Critical review vs. Day 1",focus:"Delivery — self-assessment",time:"20 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Listen to Day 1 and Day 25 back to back. Note three specific, concrete differences — pitch floor, pace, pause use, articulation — not a vague impression."],
+      fluency:"Re-read the Day 1 sentence once more, applying whatever you noticed was still missing.",
+      twister:"—",
+      app:"Record that same Day 1 sentence a third time, labeled “Day 26.”",
+      reflect:"Write down the single weakest link remaining — Day 29 targets it directly."},
+    {w:4,d:27,title:"Impromptu poise",focus:"Delivery — under pressure",time:"20 min",
+      warm:"Belly breathing, four rounds, plus one easy-onset word set.",
+      drill:["Set a timer. Pick a random everyday object nearby and speak about it for 60 seconds, no preparation, no notes."],
+      fluency:"Do this three times with three different objects, applying the pause-before-key-word technique even unscripted.",
+      twister:"—",
+      app:"Record your best of the three attempts.",
+      reflect:"Under real pressure, which technique held up automatically, and which one did you forget?"},
+    {w:4,d:28,title:"Full three-minute speech",focus:"Delivery — capstone rehearsal",time:"30 min",
+      warm:"Full sequence: belly breathing, hum, pitch slide, two twisters.",
+      drill:["Extend the Day 25 talk to three minutes with a clear opening, one turning point, and a closing line that lands on a pause."],
+      fluency:"Rehearse the opening and closing lines individually until both feel anchored on your resonant floor note.",
+      twister:"—",
+      app:"Deliver and record the full three minutes.",
+      reflect:"Listen once. Where did pace and resonance hold, and where did they slip?"},
+    {w:4,d:29,title:"Weak-spot targeting",focus:"Delivery — custom polish",time:"20 min",
+      warm:"Belly breathing, four rounds.",
+      drill:["Return to whatever you flagged on Day 26 as the weakest link — pull the specific drill from earlier in the program that addresses it and run it in full again."],
+      fluency:"Apply that fix directly inside two sentences from the Day 28 speech.",
+      twister:"—",
+      app:"Re-record just the portion of the Day 28 speech containing your weak spot.",
+      reflect:"Real improvement is usually one specific, boring fix repeated — not a new technique."},
+    {w:4,d:30,title:"Graduation recording",focus:"Delivery — final comparison",time:"25 min",
+      warm:"Full sequence, unhurried: belly breathing, hum into ahh, pitch slide, one twister of your choice.",
+      drill:["Deliver the full three-minute speech from Day 28 one final time, incorporating the Day 29 fix."],
+      fluency:"—",
+      twister:"—",
+      app:"Record it. Then play Day 1 and Day 30 back to back, once, without pausing between them.",
+      reflect:"Write down what actually changed. Then pick your next thirty days — repetition, not a new program, is what makes any of this permanent."},
+  ];
+
+  const IPA = [
+    ["i","beat","lips spread, tongue high & front"],
+    ["ɪ","bit","relaxed /i/ — jaw a touch lower"],
+    ["eɪ","bait","glide: /ɛ/ up into /ɪ/"],
+    ["ɛ","bet","jaw half-open, tongue mid-front"],
+    ["æ","bat","jaw low, tongue low & front"],
+    ["ɑ","bot","jaw fully open, tongue low & back, unrounded"],
+    ["ʌ","but","relaxed, central, clipped short"],
+    ["ɔ","bought","tongue back & low, lips rounded"],
+    ["oʊ","boat","glide: rounded /ɔ/ into /ʊ/"],
+    ["ʊ","book","tongue high & back, lips loosely rounded"],
+    ["u","boot","tongue high & back, lips tightly rounded"],
+    ["ə","about","schwa — everything relaxed & neutral"],
+    ["θ","think","tongue tip between teeth, breath only, no voice"],
+    ["ð","this","tongue tip between teeth, voiced hum"],
+    ["ɹ","red","tongue bunched back, lips rounded, nothing touches the roof"],
+    ["ŋ","sing","back of tongue on soft palate, hums through the nose"],
+    ["ʃ","she","tongue near (not touching) the ridge, lips rounded, breath only"],
+    ["ʒ","measure","same shape as /ʃ/, but voiced"],
+  ];
+
+  const meterEl = document.getElementById("meter");
+  const countLabel = document.getElementById("countLabel");
+  const weekNav = document.getElementById("weekNav");
+  const weekPanels = document.getElementById("weekPanels");
+  const ipaGrid = document.getElementById("ipaGrid");
+
+  function storeKey(day){ return "resonant-voice-day-" + day; }
+  function getDone(day){
+    try{ return localStorage.getItem(storeKey(day)) === "1"; }catch(e){ return false; }
+  }
+  function setDone(day, val){
+    try{ localStorage.setItem(storeKey(day), val ? "1" : "0"); }catch(e){}
+  }
+
+  function renderMeter(){
+    meterEl.innerHTML = "";
+    let done = 0;
+    DAYS.forEach(function(day, i){
+      const on = getDone(day.d);
+      if(on) done++;
+      const i_el = document.createElement("i");
+      i_el.className = on ? "on" : "";
+      if(i % 7 === 6) i_el.classList.add("week-end");
+      meterEl.appendChild(i_el);
+    });
+    countLabel.textContent = done + " / 30 days";
+  }
+
+  function buildIpaGrid(){
+    IPA.forEach(function(entry){
+      const row = document.createElement("div");
+      row.className = "ipa-row";
+      row.innerHTML = '<div class="head"><span class="sym">/' + entry[0] + '/</span><button type="button" class="speak-btn" data-say="' + entry[1] + '">' + entry[1] + '<span class="ic">🔊</span></button></div><div class="cue">' + entry[2] + '</div>';
+      ipaGrid.appendChild(row);
+    });
+  }
+
+  function sectionList(items){
+    if(!items || items.length === 0) return "";
+    if(items.length === 1) return items[0];
+    return items[0] + '<ul>' + items.slice(1).map(function(t){return '<li>'+t+'</li>';}).join("") + '</ul>';
+  }
+
+  function buildDayCard(day){
+    const el = document.createElement("div");
+    el.className = "day";
+    el.id = "day-" + day.d;
+    const isDone = getDone(day.d);
+    if(isDone) el.classList.add("done");
+
+    const cardHtml =
+      '<div class="day-head">' +
+        '<div class="day-num mono">' + String(day.d).padStart(2,"0") + '</div>' +
+        '<div class="titles">' +
+          '<div class="day-title">' + day.title + '</div>' +
+          '<div class="day-focus">' + day.focus + '</div>' +
+        '</div>' +
+        '<div class="day-time mono">' + day.time + '</div>' +
+        '<input type="checkbox" class="day-check" ' + (isDone ? "checked" : "") + ' aria-label="Mark day ' + day.d + ' complete">' +
+        '<div class="chevron">›</div>' +
+      '</div>' +
+      '<div class="day-body">' +
+        '<div class="session">' +
+          '<div class="label">Warm-up</div><div class="val">' + day.warm + '</div>' +
+          '<div class="row-line"></div>' +
+          '<div class="label">Drill</div><div class="val">' + sectionList(day.drill) + '</div>' +
+          '<div class="row-line"></div>' +
+          (day.twister && day.twister !== "—" ? '<div class="label">Twister</div><div class="val twister">' + day.twister + '</div><div class="row-line"></div>' : '') +
+          (day.fluency && day.fluency !== "—" ? '<div class="label">Fluency</div><div class="val">' + day.fluency + '</div><div class="row-line"></div>' : '') +
+          '<div class="label">Apply it</div><div class="val">' + day.app + '</div>' +
+          '<div class="row-line"></div>' +
+          '<div class="label">Reflect</div><div class="val">' + day.reflect + '</div>' +
+        '</div>' +
+      '</div>';
+    el.innerHTML = window.linkifySpeakable(cardHtml);
+
+    const head = el.querySelector(".day-head");
+    head.addEventListener("click", function(e){
+      if(e.target.classList.contains("day-check")) return;
+      el.classList.toggle("open");
+    });
+    const check = el.querySelector(".day-check");
+    check.addEventListener("click", function(e){ e.stopPropagation(); });
+    check.addEventListener("change", function(){
+      setDone(day.d, check.checked);
+      el.classList.toggle("done", check.checked);
+      renderMeter();
+    });
+    return el;
+  }
+
+  function buildWeekPanel(week){
+    const panel = document.createElement("div");
+    panel.className = "week-panel";
+    panel.id = "week-" + week.id;
+    const intro = document.createElement("div");
+    intro.className = "week-intro";
+    intro.innerHTML = '<h2>Week ' + week.roman + ' — ' + week.name + '</h2><p>' + week.blurb + '</p>';
+    panel.appendChild(intro);
+    DAYS.filter(function(d){ return d.w === week.id; }).forEach(function(day){
+      panel.appendChild(buildDayCard(day));
+    });
+    return panel;
+  }
+
+  function buildNav(){
+    WEEKS.forEach(function(week, i){
+      const btn = document.createElement("button");
+      btn.className = "week-btn" + (i === 0 ? " active" : "");
+      btn.innerHTML = '<span class="tag">' + week.roman + '</span><span>' + week.name + '</span>';
+      btn.addEventListener("click", function(){
+        document.querySelectorAll(".week-btn").forEach(function(b){ b.classList.remove("active"); });
+        document.querySelectorAll(".week-panel").forEach(function(p){ p.classList.remove("active"); });
+        btn.classList.add("active");
+        document.getElementById("week-" + week.id).classList.add("active");
+      });
+      weekNav.appendChild(btn);
+    });
+  }
+
+  WEEKS.forEach(function(week){ weekPanels.appendChild(buildWeekPanel(week)); });
+  document.getElementById("week-1").classList.add("active");
+  buildNav();
+  buildIpaGrid();
+  renderMeter();
+
+  const firstDay = document.getElementById("day-1");
+  if(firstDay) firstDay.classList.add("open");
+})();
+</script>
+
+<script>
+(function(){
+  // ---------- Mode switch (Program / Live Coach) ----------
+  const modeSwitch = document.getElementById("modeSwitch");
+  const programView = document.getElementById("programView");
+  const coachView = document.getElementById("coachView");
+
+  modeSwitch.addEventListener("click", function(e){
+    const btn = e.target.closest(".mode-btn");
+    if(!btn) return;
+    document.querySelectorAll(".mode-btn").forEach(function(b){ b.classList.remove("active"); });
+    btn.classList.add("active");
+    const mode = btn.dataset.mode;
+    programView.hidden = mode !== "program";
+    coachView.hidden = mode !== "coach";
+    if(mode !== "coach" && window.__coachStop) window.__coachStop();
+  });
+
+  try{
+    if(window.self !== window.top){
+      const note = document.getElementById("frameFallbackNote");
+      if(note) note.hidden = false;
+    }
+  }catch(e){
+    const note = document.getElementById("frameFallbackNote");
+    if(note) note.hidden = false;
+  }
+
+  // ---------- Live Coach ----------
+  const PASSAGES = [
+    {id:"free", label:"Free talk (no passage)", text:""},
+    {id:"d1", label:"Day 1 — baseline", text:"The old lighthouse stood alone against the grey Atlantic, its beam sweeping the water like a slow, patient hand."},
+    {id:"t1", label:"Twister — plosives", text:"Big black bug bit a big black bear."},
+    {id:"t2", label:"Twister — TH", text:"This thick thread, that thin thread — this thick thread is thicker than that thin thread."},
+    {id:"t3", label:"Twister — R", text:"Red lorry, yellow lorry, red lorry, yellow lorry."},
+    {id:"t4", label:"Twister — S/SH", text:"She sells seashells by the seashore, and the shells she sells are surely seashells."},
+  ];
+
+  const passageSelect = document.getElementById("passageSelect");
+  const passageText = document.getElementById("passageText");
+  const hearBtn = document.getElementById("hearBtn");
+  PASSAGES.forEach(function(p){
+    const opt = document.createElement("option");
+    opt.value = p.id; opt.textContent = p.label;
+    passageSelect.appendChild(opt);
+  });
+  function renderPassage(){
+    const p = PASSAGES.find(function(p){ return p.id === passageSelect.value; });
+    passageText.textContent = p.text ? "“" + p.text + "”" : "No fixed passage — speak freely.";
+    hearBtn.disabled = !p.text;
+    hearBtn.style.opacity = p.text ? "1" : "0.5";
+  }
+  passageSelect.addEventListener("change", renderPassage);
+  renderPassage();
+  hearBtn.addEventListener("click", function(){
+    const p = PASSAGES.find(function(p){ return p.id === passageSelect.value; });
+    if (p && p.text && window.speakText) window.speakText(p.text, 0.85);
+  });
+
+  const toggleBtn = document.getElementById("toggleBtn");
+  const releaseBtn = document.getElementById("releaseBtn");
+  const coachStatusDot = document.getElementById("coachStatusDot");
+  const coachStatusText = document.getElementById("coachStatusText");
+  const coachTimerEl = document.getElementById("coachTimer");
+  const wpmVal = document.getElementById("wpmVal"), wpmSub = document.getElementById("wpmSub");
+  const pitchVal = document.getElementById("pitchVal"), pitchSub = document.getElementById("pitchSub");
+  const volVal = document.getElementById("volVal"), volBar = document.getElementById("volBar");
+  const pauseVal = document.getElementById("pauseVal"), pauseSub = document.getElementById("pauseSub");
+  const fillerVal = document.getElementById("fillerVal");
+  const speakPctVal = document.getElementById("speakPctVal");
+  const sensitivity = document.getElementById("sensitivity");
+  const summaryPanel = document.getElementById("summaryPanel");
+  const summaryGrid = document.getElementById("summaryGrid");
+  const feedbackList = document.getElementById("feedbackList");
+  const historyNote = document.getElementById("historyNote");
+  const traceCanvas = document.getElementById("trace");
+  const traceCtx = traceCanvas.getContext("2d");
+
+  let running = false, micReady = false;
+  let audioCtx = null, analyser = null, mic = null, rafId = null, pitchIntervalId = null, timerIntervalId = null;
+  let startTime = 0;
+  let wordTimestamps = [];
+  let totalWordCount = 0;
+  let fillerCount = 0;
+  let pauseCount = 0, pauseTotalMs = 0;
+  let speakingMs = 0, lastFrameTime = 0;
+  let isSpeakingNow = false, silenceStartedAt = 0;
+  let pitchHistory = [];
+  let pitchMin = Infinity, pitchMax = -Infinity, pitchSum = 0, pitchN = 0;
+  let recognition = null;
+  const SRClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  function fmtTime(ms){
+    const s = Math.floor(ms/1000);
+    const m = Math.floor(s/60);
+    const r = s % 60;
+    return String(m).padStart(2,"0") + ":" + String(r).padStart(2,"0");
+  }
+
+  function autoCorrelate(buf, sampleRate){
+    const SIZE = buf.length;
+    let rms = 0;
+    for (let i=0; i<SIZE; i++){ rms += buf[i]*buf[i]; }
+    rms = Math.sqrt(rms/SIZE);
+    if (rms < 0.012) return -1;
+
+    let r1 = 0, r2 = SIZE-1;
+    const thres = 0.2;
+    for (let i=0; i<SIZE/2; i++){ if (Math.abs(buf[i]) < thres){ r1 = i; break; } }
+    for (let i=1; i<SIZE/2; i++){ if (Math.abs(buf[SIZE-i]) < thres){ r2 = SIZE-i; break; } }
+    const trimmed = buf.slice(r1, r2);
+    const n = trimmed.length;
+    if (n < 8) return -1;
+
+    const c = new Float32Array(n);
+    for (let i=0; i<n; i++){
+      let sum = 0;
+      for (let j=0; j<n-i; j++){ sum += trimmed[j]*trimmed[j+i]; }
+      c[i] = sum;
+    }
+    let d = 0;
+    while (d < n-1 && c[d] > c[d+1]) d++;
+    let maxVal = -1, maxPos = -1;
+    for (let i=d; i<n; i++){ if (c[i] > maxVal){ maxVal = c[i]; maxPos = i; } }
+    if (maxPos <= 0) return -1;
+    let T0 = maxPos;
+    const x1 = c[T0-1] !== undefined ? c[T0-1] : c[T0];
+    const x2 = c[T0];
+    const x3 = c[T0+1] !== undefined ? c[T0+1] : c[T0];
+    const a = (x1 + x3 - 2*x2) / 2;
+    const b = (x3 - x1) / 2;
+    if (a) T0 = T0 - b/(2*a);
+    const hz = sampleRate / T0;
+    if (hz < 60 || hz > 500) return -1;
+    return hz;
+  }
+
+  function drawTrace(){
+    const w = traceCanvas.width, h = traceCanvas.height;
+    traceCtx.clearRect(0,0,w,h);
+    const styles = getComputedStyle(document.documentElement);
+    const line = styles.getPropertyValue("--line").trim();
+    const accent = styles.getPropertyValue("--accent").trim();
+    traceCtx.strokeStyle = line;
+    traceCtx.lineWidth = 1;
+    for (let gy=1; gy<3; gy++){
+      const y = (h/3)*gy;
+      traceCtx.beginPath(); traceCtx.moveTo(0,y); traceCtx.lineTo(w,y); traceCtx.stroke();
+    }
+    const recent = pitchHistory.slice(-150);
+    if (recent.length < 2) return;
+    const lo = 70, hi = 320;
+    traceCtx.strokeStyle = accent;
+    traceCtx.lineWidth = 2;
+    traceCtx.beginPath();
+    recent.forEach(function(p, i){
+      const x = (i/(recent.length-1)) * w;
+      const clamped = Math.max(lo, Math.min(hi, p.hz));
+      const y = h - ((clamped-lo)/(hi-lo)) * h;
+      if (i===0) traceCtx.moveTo(x,y); else traceCtx.lineTo(x,y);
+    });
+    traceCtx.stroke();
+    const last = recent[recent.length-1];
+    const lastClamped = Math.max(lo, Math.min(hi, last.hz));
+    const ly = h - ((lastClamped-lo)/(hi-lo)) * h;
+    traceCtx.fillStyle = accent;
+    traceCtx.beginPath();
+    traceCtx.arc(w-3, ly, 3, 0, Math.PI*2);
+    traceCtx.fill();
+  }
+
+  function audioTick(){
+    if (!running) return;
+    const buf = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(buf);
+    let rms = 0;
+    for (let i=0;i<buf.length;i++){ rms += buf[i]*buf[i]; }
+    rms = Math.sqrt(rms/buf.length);
+
+    volVal.innerHTML = rms.toFixed(3) + '<span class="unit">rms</span>';
+    volBar.style.width = Math.min(100, rms*400) + "%";
+
+    const sens = Number(sensitivity.value);
+    const threshold = 0.006 + (11-sens)*0.0016;
+    const now = performance.now();
+    if (!lastFrameTime) lastFrameTime = now;
+    const dt = now - lastFrameTime;
+    lastFrameTime = now;
+
+    if (rms > threshold){
+      speakingMs += dt;
+      if (!isSpeakingNow){
+        isSpeakingNow = true;
+        if (silenceStartedAt){
+          const pauseLen = now - silenceStartedAt;
+          if (pauseLen > 450){
+            pauseCount++;
+            pauseTotalMs += pauseLen;
+            pauseVal.textContent = pauseCount;
+            pauseSub.textContent = "avg " + (pauseTotalMs/pauseCount/1000).toFixed(1) + " s";
+          }
+        }
+      }
+    } else {
+      if (isSpeakingNow){ isSpeakingNow = false; silenceStartedAt = now; }
+    }
+
+    const elapsedMs = now - startTime;
+    if (elapsedMs > 0){
+      speakPctVal.innerHTML = Math.round((speakingMs/elapsedMs)*100) + '<span class="unit">%</span>';
+    }
+
+    rafId = requestAnimationFrame(audioTick);
+  }
+
+  function pitchTick(){
+    if (!running) return;
+    const buf = new Float32Array(analyser.fftSize);
+    analyser.getFloatTimeDomainData(buf);
+    const hz = autoCorrelate(buf, audioCtx.sampleRate);
+    if (hz > 0){
+      pitchVal.innerHTML = Math.round(hz) + '<span class="unit">Hz</span>';
+      pitchMin = Math.min(pitchMin, hz);
+      pitchMax = Math.max(pitchMax, hz);
+      pitchSum += hz; pitchN++;
+      pitchHistory.push({t: performance.now(), hz: hz});
+      if (pitchHistory.length > 400) pitchHistory.shift();
+      pitchSub.textContent = "range " + Math.round(pitchMin) + "–" + Math.round(pitchMax) + " Hz";
+      drawTrace();
+    }
+  }
+
+  function updateWpm(){
+    const now = performance.now();
+    const windowMs = 15000;
+    const recentWords = wordTimestamps.filter(function(t){ return now - t <= windowMs; });
+    const liveWpm = recentWords.length * (60000/windowMs);
+    const elapsedMin = Math.max(0.05, (now - startTime)/60000);
+    const avgWpm = totalWordCount / elapsedMin;
+    wpmVal.innerHTML = Math.round(liveWpm) + '<span class="unit">wpm</span>';
+    wpmSub.textContent = "avg " + Math.round(avgWpm) + " · target 120–140";
+  }
+
+  function setupRecognition(){
+    if (!SRClass) return null;
+    const r = new SRClass();
+    r.continuous = true;
+    r.interimResults = true;
+    r.lang = "en-US";
+    r.onresult = function(e){
+      for (let i=e.resultIndex; i<e.results.length; i++){
+        const res = e.results[i];
+        if (res.isFinal){
+          const text = res[0].transcript.trim();
+          const words = text.split(/\s+/).filter(Boolean);
+          const now = performance.now();
+          words.forEach(function(){ wordTimestamps.push(now); });
+          totalWordCount += words.length;
+          const fillers = text.match(/\b(um+|uh+|erm+)\b/gi);
+          if (fillers){ fillerCount += fillers.length; fillerVal.textContent = fillerCount; }
+          updateWpm();
+        }
+      }
+    };
+    r.onend = function(){ if (running) { try{ r.start(); }catch(e){} } };
+    r.onerror = function(){};
+    return r;
+  }
+
+  const HISTORY_KEY = "resonant-voice-coach-history";
+  function loadHistory(){
+    try{ return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); }catch(e){ return []; }
+  }
+  function saveHistoryEntry(entry){
+    try{
+      const hist = loadHistory();
+      hist.push(entry);
+      while(hist.length > 20) hist.shift();
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+    }catch(e){}
+  }
+
+  function evalPace(avgWpm, hasWords){
+    if(!hasWords) return null;
+    if(avgWpm < 100) return {tone:"fix", text:"Pace was " + avgWpm + " wpm — quite slow. If that wasn't deliberate pausing practice, check you're not freezing between phrases; Week I's breath work should let you sustain a full sentence without stalling."};
+    if(avgWpm < 120) return {tone:"watch", text:"Pace was " + avgWpm + " wpm — a little under the 120–140 target, but close."};
+    if(avgWpm <= 140) return {tone:"good", text:"Pace was " + avgWpm + " wpm — right inside the program's 120–140 target band."};
+    if(avgWpm <= 160) return {tone:"watch", text:"Pace was " + avgWpm + " wpm — above target and drifting toward default conversational speed. Day 20's pacing drill targets exactly this."};
+    return {tone:"fix", text:"Pace was " + avgWpm + " wpm — noticeably rushed. This is what Week III (easy onset, deliberate pausing) is built to slow down."};
+  }
+  function evalPitchRange(span){
+    if(span===null) return null;
+    if(span < 15) return {tone:"fix", text:"Pitch range was only " + span + " Hz across the session — very narrow, trending monotone. Revisit Day 22 (pitch variation) and don't skip the Day 11 pitch-slide warm-up before you start."};
+    if(span < 40) return {tone:"watch", text:"Pitch range was " + span + " Hz — some shape to your delivery, but there's room for more variation sentence to sentence."};
+    return {tone:"good", text:"Pitch range was " + span + " Hz — real variation, not flat delivery."};
+  }
+  function evalPauses(count, avgSec, durationSec){
+    if(count === 0){
+      if(durationSec < 20) return null;
+      return {tone:"watch", text:"No pauses registered. Day 19 is built entirely around a deliberate 1–2 second silence before your key word — try forcing at least one per sentence next time."};
+    }
+    if(avgSec < 0.6){
+      return {tone:"watch", text:count + (count===1?" pause":" pauses") + " detected, but short (avg " + avgSec.toFixed(1) + "s) — that reads more as hesitation than the deliberate pause Day 19 trains. Hold it longer and land it right before your key word."};
+    }
+    return {tone:"good", text:count + (count===1?" pause":" pauses") + " averaging " + avgSec.toFixed(1) + "s — in the deliberate range, not just hesitation gaps."};
+  }
+  function evalFillers(count, durationSec, hasWords){
+    if(!hasWords) return null;
+    const perMin = durationSec > 0 ? count / (durationSec/60) : 0;
+    if(count === 0) return {tone:"good", text:"Zero “um / uh” caught on this pass — clean."};
+    if(perMin <= 1) return {tone:"watch", text:count + (count===1?" filler":" fillers") + " caught (~" + perMin.toFixed(1) + "/min) — low, but Day 15's easy-onset work targets these directly."};
+    return {tone:"fix", text:count + " fillers caught (~" + perMin.toFixed(1) + "/min) — worth targeting directly with Day 15 (easy onset) and Day 19 (pause instead of filling silence)."};
+  }
+
+  async function ensureMic(){
+    if (micReady) return true;
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({audio:true});
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      mic = audioCtx.createMediaStreamSource(stream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 2048;
+      mic.connect(analyser);
+      window.__coachStream = stream;
+      if (SRClass){ recognition = setupRecognition(); }
+      micReady = true;
+      releaseBtn.hidden = false;
+      return true;
+    } catch(err){
+      coachStatusText.textContent = "microphone unavailable — see the note above";
+      return false;
+    }
+  }
+
+  function releaseMic(){
+    if (running) stopSession();
+    if (window.__coachStream){ window.__coachStream.getTracks().forEach(function(t){ t.stop(); }); window.__coachStream = null; }
+    if (audioCtx && audioCtx.state !== "closed"){ try{ audioCtx.close(); }catch(e){} }
+    audioCtx = null; analyser = null; mic = null; recognition = null; micReady = false;
+    coachStatusText.textContent = "microphone released — next start will ask again";
+    releaseBtn.hidden = true;
+  }
+
+  async function startSession(){
+    coachStatusText.textContent = micReady ? "listening" : "requesting microphone…";
+    const ok = await ensureMic();
+    if (!ok) return;
+    if (audioCtx.state === "suspended"){ try{ await audioCtx.resume(); }catch(e){} }
+
+    running = true;
+    startTime = performance.now();
+    lastFrameTime = 0;
+    wordTimestamps = []; totalWordCount = 0; fillerCount = 0;
+    pauseCount = 0; pauseTotalMs = 0; speakingMs = 0;
+    pitchMin = Infinity; pitchMax = -Infinity; pitchSum = 0; pitchN = 0; pitchHistory = [];
+    isSpeakingNow = false; silenceStartedAt = 0;
+
+    fillerVal.textContent = "0";
+    pauseVal.textContent = "0";
+    pauseSub.textContent = "avg — s";
+    pitchSub.textContent = "range —";
+    speakPctVal.innerHTML = '0<span class="unit">%</span>';
+    summaryPanel.classList.remove("show");
+
+    coachStatusDot.classList.add("live");
+    coachStatusText.textContent = "listening";
+    toggleBtn.textContent = "Stop session";
+    toggleBtn.classList.add("stop");
+
+    if (recognition){
+      try{ recognition.start(); }catch(e){}
+    } else if (!SRClass){
+      wpmSub.textContent = "unavailable (needs Chrome)";
+    }
+
+    rafId = requestAnimationFrame(audioTick);
+    pitchIntervalId = setInterval(pitchTick, 90);
+    timerIntervalId = setInterval(function(){
+      coachTimerEl.textContent = fmtTime(performance.now() - startTime);
+    }, 250);
+  }
+
+  function stopSession(){
+    if (!running) return;
+    running = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    if (pitchIntervalId) clearInterval(pitchIntervalId);
+    if (timerIntervalId) clearInterval(timerIntervalId);
+    if (recognition){ try{ recognition.stop(); }catch(e){} }
+    if (audioCtx && audioCtx.state === "running"){ try{ audioCtx.suspend(); }catch(e){} }
+
+    coachStatusDot.classList.remove("live");
+    coachStatusText.textContent = "session ended — mic stays enabled, next start won't re-prompt";
+    toggleBtn.textContent = "Start session";
+    toggleBtn.classList.remove("stop");
+
+    const elapsedMsTotal = performance.now() - startTime;
+    const durationSec = elapsedMsTotal/1000;
+    const elapsedMin = Math.max(0.05, elapsedMsTotal/60000);
+    const hasWords = totalWordCount > 0;
+    const avgWpm = Math.round(totalWordCount / elapsedMin);
+    const avgPitch = pitchN ? Math.round(pitchSum/pitchN) : null;
+    const pitchRangeSpan = pitchN ? Math.round(pitchMax-pitchMin) : null;
+    const avgPauseSec = pauseCount ? pauseTotalMs/pauseCount/1000 : 0;
+
+    summaryGrid.innerHTML = "";
+    const items = [
+      ["Duration", fmtTime(elapsedMsTotal)],
+      ["Avg pace", (hasWords ? avgWpm + " wpm" : "—")],
+      ["Avg pitch", (avgPitch ? avgPitch + " Hz" : "—")],
+      ["Pitch range", (pitchRangeSpan!==null ? pitchRangeSpan + " Hz span" : "—")],
+      ["Pauses", pauseCount + (pauseCount ? " (avg " + avgPauseSec.toFixed(1) + "s)" : "")],
+      ["Fillers", String(fillerCount)],
+    ];
+    items.forEach(function(pair){
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = '<div class="k">'+pair[0]+'</div><div class="v">'+pair[1]+'</div>';
+      summaryGrid.appendChild(div);
+    });
+
+    const feedback = [
+      evalPace(avgWpm, hasWords),
+      evalPitchRange(pitchRangeSpan),
+      evalPauses(pauseCount, avgPauseSec, durationSec),
+      evalFillers(fillerCount, durationSec, hasWords),
+    ].filter(Boolean);
+
+    feedbackList.innerHTML = "";
+    if (feedback.length === 0){
+      feedbackList.innerHTML = '<div class="feedback-item">Not enough signal this session to give feedback — try a longer take, or watch the Volume tile next time to confirm the mic is picking you up.</div>';
+    } else {
+      feedback.forEach(function(f){
+        const div = document.createElement("div");
+        div.className = "feedback-item tone-" + f.tone;
+        div.innerHTML = '<span class="tag">' + f.tone + '</span>' + f.text;
+        feedbackList.appendChild(div);
+      });
+    }
+
+    const hist = loadHistory();
+    if (hist.length){
+      const priorPitches = hist.map(function(h){ return h.avgPitch; }).filter(function(v){ return v; });
+      const priorWpms = hist.map(function(h){ return h.avgWpm; }).filter(function(v){ return v; });
+      const lines = [];
+      if (avgPitch && priorPitches.length){
+        const rollingAvg = priorPitches.reduce(function(a,b){ return a+b; },0) / priorPitches.length;
+        const delta = Math.round(avgPitch - rollingAvg);
+        lines.push("pitch " + Math.abs(delta) + "Hz " + (delta<=0 ? "lower" : "higher") + " than your " + priorPitches.length + "-session average (" + Math.round(rollingAvg) + "Hz)" + (delta<0 ? " — trending toward more chest resonance" : ""));
+      }
+      if (hasWords && priorWpms.length){
+        const rollingWpm = priorWpms.reduce(function(a,b){ return a+b; },0) / priorWpms.length;
+        const deltaWpm = Math.round(avgWpm - rollingWpm);
+        lines.push("pace " + Math.abs(deltaWpm) + " wpm " + (deltaWpm<=0 ? "slower" : "faster") + " than your average (" + Math.round(rollingWpm) + " wpm)");
+      }
+      historyNote.innerHTML = lines.length ? ("<b>Vs. your history — </b>" + lines.join("; ") + ".") : "";
+    } else {
+      historyNote.textContent = "This is your first logged session on this device — future sessions will compare against it.";
+    }
+
+    saveHistoryEntry({
+      t: Date.now(),
+      avgWpm: hasWords ? avgWpm : null,
+      avgPitch: avgPitch,
+      pitchRange: pitchRangeSpan,
+      pauseCount: pauseCount,
+      fillerCount: fillerCount,
+    });
+
+    summaryPanel.classList.add("show");
+  }
+  window.__coachStop = stopSession;
+
+  releaseBtn.addEventListener("click", releaseMic);
+  window.addEventListener("pagehide", function(){
+    if (window.__coachStream){ window.__coachStream.getTracks().forEach(function(t){ t.stop(); }); }
+    if (audioCtx && audioCtx.state !== "closed"){ try{ audioCtx.close(); }catch(e){} }
+  });
+
+  toggleBtn.addEventListener("click", function(){
+    if (!running) startSession(); else stopSession();
+  });
+
+  if (!SRClass){
+    const note = document.createElement("span");
+    note.className = "fallback-note";
+    note.textContent = "This browser has no built-in speech recognition — pace and filler tracking will stay blank. Pitch, volume, and pause detection work regardless. Open this file in Chrome for the full set.";
+    document.querySelector(".privacy").appendChild(note);
+  }
+})();
+</script>
