@@ -351,6 +351,24 @@
     font-family:"IBM Plex Mono"; font-size:0.85rem; background:var(--paper); color:var(--text);
     border:1px solid var(--line); border-radius:3px; padding:0.5rem 0.6rem; min-width:220px;
   }
+  #checkpointSelect{ min-width:190px; }
+  #checkpointSelect.active{ border-color:var(--accent); color:var(--accent-deep); }
+
+  .progress-intro{ font-size:0.86rem; color:var(--text-dim); margin:0 0 1rem; max-width:70ch; }
+  .progress-table-wrap{ overflow-x:auto; }
+  table.progress-table{ border-collapse:collapse; width:100%; font-family:"IBM Plex Mono"; font-size:0.82rem; font-variant-numeric:tabular-nums; }
+  table.progress-table th, table.progress-table td{ padding:0.5rem 0.9rem; text-align:right; white-space:nowrap; border-bottom:1px solid var(--line); }
+  table.progress-table th:first-child, table.progress-table td:first-child{ text-align:left; color:var(--text-dim); font-size:0.76rem; text-transform:uppercase; letter-spacing:0.05em; }
+  table.progress-table thead th{ color:var(--text-dim); font-weight:500; }
+  table.progress-table thead th .day{ display:block; font-size:0.7rem; color:var(--text-dim); font-weight:400; }
+  table.progress-table thead th.current{ color:var(--ink); }
+  table.progress-table td.empty{ color:var(--text-dim); opacity:0.5; }
+  table.progress-table td .delta{ display:block; font-size:0.7rem; color:var(--text-dim); }
+  table.progress-table td.tone-good{ color:var(--done); }
+  table.progress-table td.tone-watch{ color:var(--accent-deep); }
+  table.progress-table td.tone-fix{ color:var(--warn); }
+  .progress-summary{ margin:1rem 0 0; padding-top:0.9rem; border-top:1px dashed var(--line); font-size:0.88rem; color:var(--text-dim); }
+  .progress-summary b{ color:var(--text); }
   .coach-passage{
     font-family:"Newsreader"; font-style:italic; font-size:1.1rem; color:var(--ink);
     margin-top:0.8rem; padding-top:0.8rem; border-top:1px dashed var(--line); min-height:1.6em;
@@ -466,9 +484,20 @@
     <span class="fallback-note" id="frameFallbackNote" hidden>This page appears to be running inside an embedded viewer, which typically blocks microphone access for security reasons. If “Start session” fails, save this file and open it directly in Chrome (double-click it, or drag it into a Chrome tab) instead.</span>
   </div>
 
+  <div class="coach-panel" id="progressPanel">
+    <h3>Progress across weeks</h3>
+    <p class="progress-intro">A fair week-to-week comparison needs the same script read the same way — free-practice sessions below use whatever passage you like, but a <b>checkpoint</b> always locks to the Day 1 baseline sentence, so these five readings are directly comparable to each other.</p>
+    <div class="progress-table-wrap"><table class="progress-table" id="progressTable"></table></div>
+    <p class="progress-summary" id="progressSummary"></p>
+  </div>
+
   <div class="coach-panel">
     <h3>Session setup</h3>
     <div class="coach-row">
+      <div class="coach-field">
+        <label for="checkpointSelect">Checkpoint</label>
+        <select id="checkpointSelect"></select>
+      </div>
       <div class="coach-field">
         <label for="passageSelect">Reading passage</label>
         <select id="passageSelect"></select>
@@ -537,7 +566,7 @@
     <div class="history-note" id="historyNote"></div>
   </div>
 
-  <p class="coach-limits">This does not score pronunciation accuracy — it can't tell you whether a specific /θ/ or /ɹ/ landed correctly. It measures the mechanics from the 30-day program: pace, pitch range, pause use, and volume steadiness. Pitch detection is autocorrelation-based and can jump an octave on noisy input; trust the trend across a session more than any single instantaneous reading.</p>
+  <p class="coach-limits">This does not score pronunciation accuracy — it can't tell you whether a specific /θ/ or /ɹ/ landed correctly. It measures the mechanics from the 30-day program: pace, pitch range, pause use, and volume steadiness. Pitch detection is autocorrelation-based and can jump an octave on noisy input; trust the trend across a session more than any single instantaneous reading. A checkpoint locks the passage picker to the right script, but nothing here verifies you actually read that exact text aloud — the comparison is only as fair as your own consistency.</p>
 </div>
 
 <footer>
@@ -1064,9 +1093,50 @@
     {id:"t4", label:"Twister — S/SH", text:"She sells seashells by the seashore, and the shells she sells are surely seashells."},
   ];
 
+  const CHECKPOINTS = [
+    {id:"baseline", short:"Baseline", day:1},
+    {id:"week1", short:"Week 1", day:7},
+    {id:"week2", short:"Week 2", day:14},
+    {id:"week3", short:"Week 3", day:21},
+    {id:"week4", short:"Week 4", day:30},
+  ];
+  const ASSESS_KEY = "resonant-voice-coach-assessments";
+  function loadAssessments(){
+    try{ return JSON.parse(localStorage.getItem(ASSESS_KEY) || "{}"); }catch(e){ return {}; }
+  }
+  function saveAssessment(checkpointId, data){
+    try{
+      const all = loadAssessments();
+      all[checkpointId] = data;
+      localStorage.setItem(ASSESS_KEY, JSON.stringify(all));
+    }catch(e){}
+  }
+  function toneForPace(w){ if(w==null) return ""; if(w>=120&&w<=140) return "tone-good"; if(w<100||w>160) return "tone-fix"; return "tone-watch"; }
+  function toneForPitchRange(r){ if(r==null) return ""; if(r>=40) return "tone-good"; if(r<15) return "tone-fix"; return "tone-watch"; }
+  function toneForPause(s){ if(s==null) return ""; return s>=0.6 ? "tone-good" : "tone-watch"; }
+  function toneForFillers(f){ if(f==null) return ""; if(f<=0) return "tone-good"; if(f<=1) return "tone-watch"; return "tone-fix"; }
+
   const passageSelect = document.getElementById("passageSelect");
   const passageText = document.getElementById("passageText");
   const hearBtn = document.getElementById("hearBtn");
+  const checkpointSelect = document.getElementById("checkpointSelect");
+  const progressTable = document.getElementById("progressTable");
+  const progressSummary = document.getElementById("progressSummary");
+
+  const noneOpt = document.createElement("option");
+  noneOpt.value = "none"; noneOpt.textContent = "None — free practice";
+  checkpointSelect.appendChild(noneOpt);
+  CHECKPOINTS.forEach(function(cp){
+    const opt = document.createElement("option");
+    opt.value = cp.id; opt.textContent = cp.short + " (Day " + cp.day + ")";
+    checkpointSelect.appendChild(opt);
+  });
+  (function defaultCheckpoint(){
+    const done = loadAssessments();
+    const next = CHECKPOINTS.find(function(cp){ return !done[cp.id]; });
+    checkpointSelect.value = next ? next.id : "none";
+  })();
+
   PASSAGES.forEach(function(p){
     const opt = document.createElement("option");
     opt.value = p.id; opt.textContent = p.label;
@@ -1078,12 +1148,96 @@
     hearBtn.disabled = !p.text;
     hearBtn.style.opacity = p.text ? "1" : "0.5";
   }
+  function applyCheckpointLock(){
+    const isCheckpoint = checkpointSelect.value !== "none";
+    checkpointSelect.classList.toggle("active", isCheckpoint);
+    if (isCheckpoint){
+      passageSelect.value = "d1";
+      passageSelect.disabled = true;
+    } else {
+      passageSelect.disabled = false;
+    }
+    renderPassage();
+  }
+  checkpointSelect.addEventListener("change", applyCheckpointLock);
   passageSelect.addEventListener("change", renderPassage);
-  renderPassage();
+  applyCheckpointLock();
   hearBtn.addEventListener("click", function(){
     const p = PASSAGES.find(function(p){ return p.id === passageSelect.value; });
     if (p && p.text && window.speakText) window.speakText(p.text, 0.85);
   });
+
+  function renderProgressTable(){
+    const data = loadAssessments();
+    const rows = [
+      {key:"avgWpm", label:"Pace", unit:" wpm", fmt:function(v){ return Math.round(v); }, tone:toneForPace},
+      {key:"avgPitch", label:"Avg pitch", unit:"Hz", fmt:function(v){ return Math.round(v); }, tone:null},
+      {key:"pitchRange", label:"Pitch range", unit:"Hz", fmt:function(v){ return Math.round(v); }, tone:toneForPitchRange},
+      {key:"avgPauseSec", label:"Avg pause", unit:"s", fmt:function(v){ return v.toFixed(1); }, tone:toneForPause},
+      {key:"fillerPerMin", label:"Fillers", unit:"/min", fmt:function(v){ return v.toFixed(1); }, tone:toneForFillers},
+      {key:"speakingPct", label:"Speaking time", unit:"%", fmt:function(v){ return Math.round(v); }, tone:null},
+    ];
+    let thead = "<thead><tr><th></th>";
+    CHECKPOINTS.forEach(function(cp){
+      thead += '<th class="' + (data[cp.id] ? "current" : "") + '">' + cp.short + '<span class="day">Day ' + cp.day + '</span></th>';
+    });
+    thead += "</tr></thead>";
+
+    let tbody = "<tbody>";
+    let baselineData = data.baseline || null;
+    rows.forEach(function(row){
+      tbody += "<tr><td>" + row.label + "</td>";
+      CHECKPOINTS.forEach(function(cp){
+        const rec = data[cp.id];
+        if (!rec || rec[row.key] === null || rec[row.key] === undefined){
+          tbody += '<td class="empty">—</td>';
+          return;
+        }
+        const val = row.fmt(rec[row.key]) + row.unit;
+        let delta = "";
+        if (baselineData && cp.id !== "baseline" && baselineData[row.key] != null){
+          const d = rec[row.key] - baselineData[row.key];
+          if (Math.abs(d) >= 0.05){
+            delta = '<span class="delta">' + (d > 0 ? "+" : "") + row.fmt(d) + " vs base</span>";
+          }
+        }
+        const tone = row.tone ? row.tone(rec[row.key]) : "";
+        tbody += '<td class="' + tone + '">' + val + delta + "</td>";
+      });
+      tbody += "</tr>";
+    });
+    tbody += "</tbody>";
+    progressTable.innerHTML = thead + tbody;
+
+    const completed = CHECKPOINTS.filter(function(cp){ return data[cp.id]; });
+    if (completed.length < 2){
+      progressSummary.innerHTML = completed.length === 1
+        ? "One checkpoint logged so far (<b>" + completed[0].short + "</b>). Come back at your next review day (7, 14, 21 or 30) to start seeing the comparison."
+        : "No checkpoints logged yet. Pick one from the dropdown above, read the locked Day 1 passage, and it'll show up here.";
+      return;
+    }
+    const first = data[completed[0].id];
+    const last = data[completed[completed.length-1].id];
+    const parts = [];
+    if (first.avgWpm != null && last.avgWpm != null){
+      const d = Math.round(last.avgWpm - first.avgWpm);
+      if (d !== 0) parts.push("pace " + Math.abs(d) + " wpm " + (d<0?"slower":"faster"));
+    }
+    if (first.avgPitch != null && last.avgPitch != null){
+      const d = Math.round(last.avgPitch - first.avgPitch);
+      if (d !== 0) parts.push("pitch floor " + Math.abs(d) + "Hz " + (d<0?"lower":"higher"));
+    }
+    if (first.pitchRange != null && last.pitchRange != null){
+      const d = Math.round(last.pitchRange - first.pitchRange);
+      if (d !== 0) parts.push("pitch range " + Math.abs(d) + "Hz " + (d>0?"wider":"narrower"));
+    }
+    if (first.fillerPerMin != null && last.fillerPerMin != null){
+      const d = last.fillerPerMin - first.fillerPerMin;
+      if (Math.abs(d) >= 0.1) parts.push("fillers " + Math.abs(d).toFixed(1) + "/min " + (d<0?"down":"up"));
+    }
+    progressSummary.innerHTML = "<b>" + completed[0].short + " → " + completed[completed.length-1].short + ":</b> " + (parts.length ? parts.join(", ") + "." : "no notable change yet.");
+  }
+  renderProgressTable();
 
   const toggleBtn = document.getElementById("toggleBtn");
   const releaseBtn = document.getElementById("releaseBtn");
@@ -1494,6 +1648,27 @@
       pauseCount: pauseCount,
       fillerCount: fillerCount,
     });
+
+    if (checkpointSelect.value !== "none"){
+      const cp = CHECKPOINTS.find(function(c){ return c.id === checkpointSelect.value; });
+      saveAssessment(checkpointSelect.value, {
+        t: Date.now(),
+        avgWpm: hasWords ? avgWpm : null,
+        avgPitch: avgPitch,
+        pitchRange: pitchRangeSpan,
+        avgPauseSec: pauseCount ? avgPauseSec : null,
+        fillerPerMin: durationSec > 0 ? fillerCount / (durationSec/60) : 0,
+        speakingPct: elapsedMsTotal > 0 ? (speakingMs/elapsedMsTotal)*100 : null,
+      });
+      renderProgressTable();
+      const savedNote = document.createElement("div");
+      savedNote.className = "feedback-item tone-good";
+      savedNote.innerHTML = '<span class="tag">saved</span>Logged as your <b>' + cp.short + '</b> checkpoint — see the progress table above Session setup.';
+      feedbackList.appendChild(savedNote);
+      const next = CHECKPOINTS.find(function(c){ return !loadAssessments()[c.id]; });
+      checkpointSelect.value = next ? next.id : "none";
+      applyCheckpointLock();
+    }
 
     summaryPanel.classList.add("show");
   }
