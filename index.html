@@ -460,7 +460,7 @@
   <div class="meter-wrap">
     <div class="ref-card" style="margin-bottom:1.4rem;">
       <p style="margin:0;color:var(--text-dim);font-size:0.9rem;"><strong style="color:var(--ink)">Running a drill, three steps:</strong> (1) say the example word normally, (2) isolate just the target sound inside it and hold that sound a few seconds, shaping your mouth using the cue given, (3) say the word again with that same shape. No rep count given? Default to three slow passes through the list, then one pass at natural speed. The IPA symbol at the end of each line (e.g. <span class="mono">/i/</span>) is just a label for cross-checking against the <a href="#ipaRef">reference panel</a> — you don't need to read it to do the drill.</p>
-      <p style="margin:0.7rem 0 0;color:var(--text-dim);font-size:0.9rem;">Any underlined word — like this: <button type="button" class="speak-btn" data-say="pronunciation">pronunciation<span class="ic">🔊</span></button> — plays your browser's built-in text-to-speech when clicked, so you can hear it before you say it yourself. It's a synthetic voice, not a professional recording, and it can't demonstrate pitch, stress, or timing (the things Days 6, 17 and 22 are actually training) — use it to check you've got the right sound, not as a model for delivery.</p>
+      <p style="margin:0.7rem 0 0;color:var(--text-dim);font-size:0.9rem;">Any underlined word — like this: <button type="button" class="speak-btn" data-say="pronunciation">pronunciation<span class="ic">🔊</span></button> — plays your browser's built-in text-to-speech when clicked, so you can hear it before you say it yourself. It's tuned deeper and slower — the same chest-resonant, deliberate delivery this whole program is training toward — using whichever system voice is available, at a lowered pitch and pace; it's still a synthetic voice, not a professional recording or any real person's actual voice, and it can't demonstrate pitch, stress, or timing (the things Days 6, 17 and 22 are actually training) — use it to check you've got the right sound, not as a model for delivery.</p>
     </div>
     <div class="meter-head"><span>Progress</span><span class="count" id="countLabel">0 / 30 days</span></div>
     <div class="meter" id="meter"></div>
@@ -594,8 +594,15 @@
     if (!SPEAK_SUPPORTED) return null;
     if (cachedVoice) return cachedVoice;
     const voices = window.speechSynthesis.getVoices();
-    cachedVoice = voices.find(function(v){ return /en-US/i.test(v.lang) && /Google US English|Samantha|Alex/i.test(v.name); })
-      || voices.find(function(v){ return /en-US/i.test(v.lang); })
+    // Deepest, most resonant male system voices first — this is styling the
+    // built-in synthetic voice, not attempting to clone any real person's voice.
+    const deepVoicesInPriorityOrder = ["Daniel", "Alex", "Google UK English Male", "Microsoft David", "Fred", "Google US English"];
+    for (let i = 0; i < deepVoicesInPriorityOrder.length; i++){
+      const name = deepVoicesInPriorityOrder[i];
+      const match = voices.find(function(v){ return v.name.indexOf(name) !== -1; });
+      if (match){ cachedVoice = match; return match; }
+    }
+    cachedVoice = voices.find(function(v){ return /en-US/i.test(v.lang); })
       || voices.find(function(v){ return /^en/i.test(v.lang); })
       || voices[0] || null;
     return cachedVoice;
@@ -610,7 +617,8 @@
     const v = pickVoice();
     if (v) u.voice = v;
     u.lang = "en-US";
-    u.rate = rate || (text.length <= 4 ? 0.55 : 0.85);
+    u.pitch = 0.8;
+    u.rate = rate || (text.length <= 4 ? 0.48 : 0.75);
     window.speechSynthesis.speak(u);
   };
   window.linkifySpeakable = function(html){
@@ -1167,7 +1175,7 @@
   applyCheckpointLock();
   hearBtn.addEventListener("click", function(){
     const p = PASSAGES.find(function(p){ return p.id === passageSelect.value; });
-    if (p && p.text && window.speakText) window.speakText(p.text, 0.85);
+    if (p && p.text && window.speakText) window.speakText(p.text, 0.75);
   });
 
   function renderProgressTable(){
